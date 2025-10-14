@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>シンプルスロットマシン</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    background: #222;
+    color: #fff;
+  }
+  #slot-machine {
+    display: flex;
+    justify-content: center;
+    font-size: 60px;
+    margin-bottom: 20px;
+  }
+  .reel {
+    width: 80px;
+    height: 80px;
+    margin: 0 10px;
+    border: 4px solid #fff;
+    border-radius: 10px;
+    line-height: 80px;
+    background: #444;
+    user-select: none;
+  }
+  #spin-button {
+    padding: 10px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+  }
+  #result {
+    margin-top: 20px;
+    font-size: 24px;
+    height: 30px;
+  }
+</style>
+</head>
+<body>
+
+<h1>シンプルスロットマシン</h1>
+
+<div id="slot-machine">
+  <div class="reel" id="reel1">🍒</div>
+  <div class="reel" id="reel2">🍒</div>
+  <div class="reel" id="reel3">🍒</div>
+</div>
+
+<button id="spin-button">スピン</button>
+
+<div id="result"></div>
+
+<script>
+  const symbols = ['🍒', '🍋', '🍊', '⭐', '7️⃣', '🍉'];
+  const reels = [
+    document.getElementById('reel1'),
+    document.getElementById('reel2'),
+    document.getElementById('reel3')
+  ];
+  const resultDisplay = document.getElementById('result');
+  const spinButton = document.getElementById('spin-button');
+
+  let spinning = false;
+
+  function getRandomSymbol() {
+    return symbols[Math.floor(Math.random() * symbols.length)];
+  }
+
+  function spin() {
+    if (spinning) return; // 連打防止
+    spinning = true;
+    resultDisplay.textContent = '';
+    spinButton.disabled = true;
+
+    let spinsCount = 0;
+    const maxSpins = 20;
+    const spinInterval = 100;
+
+    const intervalId = setInterval(() => {
+      for (let i = 0; i < reels.length; i++) {
+        reels[i].textContent = getRandomSymbol();
+      }
+      spinsCount++;
+      if (spinsCount >= maxSpins) {
+        clearInterval(intervalId);
+        checkResult();
+        spinning = false;
+        spinButton.disabled = false;
+      }
+    }, spinInterval);
+  }
+
+  function checkResult() {
+    const results = reels.map(reel => reel.textContent);
+    // 全部同じなら当たり
+    if (results[0] === results[1] && results[1] === results[2]) {
+      if(results[0] === '7️⃣') {
+        resultDisplay.textContent = '大当たり！７７７！すごい！🎉';
+      } else {
+        resultDisplay.textContent = '当たり！おめでとう！🎉';
+      }
+    } else {
+      resultDisplay.textContent = 'はずれ…また挑戦してね！';
+    }
+  }
+
+  spinButton.addEventListener('click', spin);
+</script>
+
+</body>
+</html>
