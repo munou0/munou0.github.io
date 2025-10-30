@@ -2,119 +2,209 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="index, follow">
-<title>シンプルスロットマシン</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>サイバーパンク風 Chatbot - フルスクリーン対応</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-    background: #222;
-    color: #fff;
-  }
-  #slot-machine {
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+  /* 全画面対応のためbodyとhtmlを高さ100%に */
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #0f0f16;
+    color: #00ffea;
+    font-family: 'Orbitron', monospace, monospace;
     display: flex;
-    justify-content: center;
-    font-size: 60px;
-    margin-bottom: 20px;
+    flex-direction: column;
   }
-  .reel {
-    width: 80px;
-    height: 80px;
-    margin: 0 10px;
-    border: 4px solid #fff;
-    border-radius: 10px;
-    line-height: 80px;
-    background: #444;
+
+  h1 {
+    text-align: center;
+    color: #ff00ff;
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    margin: 20px 0 0 0;
     user-select: none;
   }
-  #spin-button {
-    padding: 10px 30px;
-    font-size: 20px;
-    cursor: pointer;
-    border-radius: 6px;
-    border: none;
-    background-color: #28a745;
-    color: white;
+
+  #subtitle {
+    text-align: center;
+    color: #00ffea;
+    text-shadow: 0 0 8px #00ffea;
+    margin: -8px 0 15px 0;
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    user-select: none;
   }
-  #result {
-    margin-top: 20px;
-    font-size: 24px;
-    height: 30px;
+
+  #chatbox {
+    background: #12121f;
+    border: 2px solid #00ffea;
+    border-radius: 10px;
+    padding: 15px;
+    flex-grow: 1;
+    margin: 0 20px;
+    overflow-y: auto;
+    box-shadow: 0 0 15px #00ffea;
+    user-select: text;
+  }
+
+  .user-msg {
+    color: #ff00ff;
+    margin: 8px 0;
+    text-align: right;
+    text-shadow: 0 0 6px #ff00ff;
+    font-weight: 700;
+  }
+
+  .bot-msg {
+    color: #00ffea;
+    margin: 8px 0;
+    text-align: left;
+    text-shadow: 0 0 6px #00ffea;
+    font-weight: 700;
+  }
+
+  #input-area {
+    margin: 15px 20px 20px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  #input-text {
+    flex-grow: 1;
+    background: #12121f;
+    border: 2px solid #ff00ff;
+    border-radius: 5px 0 0 5px;
+    color: #00ffea;
+    padding: 12px;
+    font-size: 1.1em;
+    outline: none;
+    box-shadow: 0 0 10px #ff00ff inset;
+  }
+
+  #input-text::placeholder {
+    color: #555;
+    letter-spacing: 0.1em;
+  }
+
+  #send-btn {
+    background: #ff00ff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    color: #0f0f16;
+    padding: 12px 25px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff00ff;
+    transition: background 0.3s ease;
+    letter-spacing: 0.12em;
+  }
+
+  #send-btn:hover {
+    background: #e600e6;
+  }
+
+  #error {
+    color: #ff0044;
+    margin: 0 20px 15px 20px;
+    text-align: center;
+    text-shadow: 0 0 10px #ff0044;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    min-height: 24px;
+    user-select: none;
+  }
+
+  /* スクロールバーをネオン風にカスタマイズ(Webkit系) */
+  #chatbox::-webkit-scrollbar {
+    width: 8px;
+  }
+  #chatbox::-webkit-scrollbar-track {
+    background: #12121f;
+  }
+  #chatbox::-webkit-scrollbar-thumb {
+    background: #ff00ff;
+    border-radius: 4px;
+    box-shadow: 0 0 8px #ff00ff;
   }
 </style>
 </head>
 <body>
 
-<h1>シンプルスロットマシン</h1>
+<h1>NEON NODE GPT-4o-mini</h1>
+<div id="subtitle"># Engage the digital frontier. Speak your code.</div>
 
-<div id="slot-machine">
-  <div class="reel" id="reel1">🍒</div>
-  <div class="reel" id="reel2">🍒</div>
-  <div class="reel" id="reel3">🍒</div>
+<div id="chatbox"></div>
+
+<div id="input-area">
+  <input type="text" id="input-text" placeholder="> INPUT YOUR COMMAND..." autocomplete="off" />
+  <button id="send-btn">TRANSMIT</button>
 </div>
 
-<button id="spin-button">スピン</button>
-
-<div id="result"></div>
+<div id="error"></div>
 
 <script>
-  const symbols = ['🍒', '🍋', '🍊', '⭐', '7️⃣', '🍉'];
-  const reels = [
-    document.getElementById('reel1'),
-    document.getElementById('reel2'),
-    document.getElementById('reel3')
-  ];
-  const resultDisplay = document.getElementById('result');
-  const spinButton = document.getElementById('spin-button');
+  const chatbox = document.getElementById('chatbox');
+  const inputText = document.getElementById('input-text');
+  const sendBtn = document.getElementById('send-btn');
+  const errorDiv = document.getElementById('error');
 
-  let spinning = false;
+  const API_KEY = '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';
+  const ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
-  function getRandomSymbol() {
-    return symbols[Math.floor(Math.random() * symbols.length)];
+  sendBtn.addEventListener('click', () => {
+    const message = inputText.value.trim();
+    if (!message) return;
+    appendMessage('user', message);
+    inputText.value = '';
+    errorDiv.textContent = '';
+    callOpenAI(message);
+  });
+
+  inputText.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendBtn.click();
+  });
+
+  function appendMessage(role, text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    div.className = role === 'user' ? 'user-msg' : 'bot-msg';
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
   }
 
-  function spin() {
-    if (spinning) return; // 連打防止
-    spinning = true;
-    resultDisplay.textContent = '';
-    spinButton.disabled = true;
+  async function callOpenAI(message) {
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'user', content: message }]
+        })
+      });
 
-    let spinsCount = 0;
-    const maxSpins = 20;
-    const spinInterval = 100;
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error.message || 'APIエラーが発生しました');
+      }
 
-    const intervalId = setInterval(() => {
-      for (let i = 0; i < reels.length; i++) {
-        reels[i].textContent = getRandomSymbol();
-      }
-      spinsCount++;
-      if (spinsCount >= maxSpins) {
-        clearInterval(intervalId);
-        checkResult();
-        spinning = false;
-        spinButton.disabled = false;
-      }
-    }, spinInterval);
-  }
-
-  function checkResult() {
-    const results = reels.map(reel => reel.textContent);
-    // 全部同じなら当たり
-    if (results[0] === results[1] && results[1] === results[2]) {
-      if(results[0] === '7️⃣') {
-        resultDisplay.textContent = '大当たり！７７７！すごい！🎉';
-      } else {
-        resultDisplay.textContent = '当たり！おめでとう！🎉';
-      }
-    } else {
-      resultDisplay.textContent = 'はずれ…また挑戦してね！';
+      const data = await res.json();
+      const reply = data.choices[0].message.content;
+      appendMessage('bot', reply);
+    } catch (err) {
+      errorDiv.textContent = 'ERROR: ' + err.message.toUpperCase();
     }
   }
-
-  spinButton.addEventListener('click', spin);
 </script>
 
 </body>
 </html>
+
+
