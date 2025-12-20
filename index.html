@@ -1,284 +1,115 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Windows CMD - Fake</title>
-<style>
-  html,body { height:100%; margin:0; background:#111; font-family: "Consolas", "Lucida Console", Monaco, monospace; }
-  .window {
-    box-sizing:border-box;
-    width:100%;
-    max-width:980px;
-    height:640px;
-    margin:40px auto;
-    background:linear-gradient(#0b0b0b,#050505);
-    border-radius:6px;
-    border:1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コンソール風入力画面</title>
+    <style>
+        body {
+            font-family: Consolas, monospace;
+            background-color: #282c34;
+            color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-  /* Title bar */
-  .titlebar {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:8px 12px;
-    background:linear-gradient(#1f1f1f,#141414);
-    color:#ddd;
-    font-size:13px;
-    user-select:none;
-  }
-  .titlebar .dots { display:flex; gap:6px; }
-  .dot { width:12px; height:12px; border-radius:50%; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.5); }
-  .dot.r { background:#ff5f57; }
-  .dot.y { background:#febc2e; }
-  .dot.g { background:#28c840; }
+        .console-container {
+            background-color: #1e1e1e;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 80%;
+        }
 
-  /* Terminal body */
-  .term {
-    padding:12px 14px;
-    color:#dcdcdc; /* default text color */
-    background:transparent;
-    font-size:15px;
-    line-height:1.45;
-    flex:1;
-    overflow:auto;
-    white-space:pre-wrap;
-  }
+        .output-box {
+            background-color: #333;
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
 
-  /* Prompt line */
-  .line { display:flex; align-items:center; gap:8px; }
-  .prompt {
-    color:#9bdcff;
-    margin-right:6px;
-    user-select:text;
-    flex:0 0 auto;
-  }
+        .input-box {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
 
-  input.cmd {
-    flex:1;
-    background:transparent;
-    color:inherit;
-    border:0;
-    outline:0;
-    caret-color:#dcdcdc;
-    font:inherit;
-    padding:0;
-    margin:0;
-    min-width:6ch;
-  }
-  /* Remove default input chrome on iOS */
-  input.cmd::-ms-clear, input.cmd::-ms-reveal { display:none; width:0; height:0; }
-  ::selection { background:rgba(255,255,255,0.12); }
+        .input-box input {
+            background-color: #222;
+            color: #ddd;
+            border: 1px solid #444;
+            padding: 10px;
+            flex-grow: 1;
+            font-size: 14px;
+            border-radius: 5px;
+            outline: none;
+        }
 
-  .output { color:#dcdcdc; margin:4px 0 8px 0; white-space:pre-wrap; }
+        .input-box button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
 
-  .muted { color:#9a9a9a; }
+        .input-box button:hover {
+            background-color: #0056b3;
+        }
 
-  /* Faux blinking cursor for non-input output (if needed) */
-  .cursor {
-    display:inline-block;
-    width:.6ch;
-    height:1.1em;
-    background:#dcdcdc;
-    animation:blink 1s steps(1) infinite;
-    vertical-align:bottom;
-    margin-left:2px;
-  }
-  @keyframes blink { 50% { opacity:0; } }
+        .error {
+            color: red;
+        }
 
-  /* small help hint */
-  .hint { position: absolute; right:18px; bottom:12px; color:#7b7b7b; font-size:12px; }
-</style>
+        .result {
+            color: #28a745;
+        }
+    </style>
 </head>
 <body>
-  <div class="window" role="application" aria-label="Fake Windows Command Prompt">
-    <div class="titlebar">
-      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-      <div style="font-weight:600">C:\Windows\system32\cmd.exe</div>
-      <div style="margin-left:auto;font-size:12px;color:#a8a8a8">Windows Command Prompt — 再現</div>
+
+<div class="console-container">
+    <div class="output-box" id="outputBox">
+        Welcome to the console! Enter your JavaScript code below and click "Execute".
     </div>
-
-    <div class="term" id="term" tabindex="0" aria-live="polite">
-      <!-- initial text lines -->
-      <div class="output muted">Microsoft Windows [Version 10.0.19045.XXX]</div>
-      <div class="output muted">(c) Microsoft Corporation. All rights reserved.</div>
-
-      <!-- prompt area where new lines will be appended -->
+    <div class="input-box">
+        <input type="text" id="inputCode" placeholder="Enter JavaScript code...">
+        <button onclick="executeCode()">Execute</button>
     </div>
-
-    <div class="hint muted">サポート: dir, cls, echo, help, time, date, history, exit</div>
-  </div>
+</div>
 
 <script>
-(function(){
-  const term = document.getElementById('term');
-  const username = 'パソコンマニア'; // ここを好きな名前に変えて
-  const drive = 'C:';
-  const initialPath = `\\Users\\${username}`;
-  const promptTextBase = `${drive}${initialPath}>`;
+    function executeCode() {
+        const inputCode = document.getElementById("inputCode").value;
+        const outputBox = document.getElementById("outputBox");
 
-  let history = [];
-  let historyIndex = -1;
+        try {
+            // evalでコードを実行
+            const result = eval(inputCode);
+            outputBox.innerHTML += "<br><span class='result'>Result: " + result + "</span>";
+        } catch (error) {
+            // エラーがあればエラー内容を表示
+            outputBox.innerHTML += "<br><span class='error'>Error: " + error.stack + "</span>";
+        }
 
-  const fakeFS = [
-    {name:'Documents', type:'dir'},
-    {name:'Desktop', type:'dir'},
-    {name:'picture.jpg', type:'file', size:'124 KB'},
-    {name:'notes.txt', type:'file', size:'1 KB'},
-    {name:'program.exe', type:'file', size:'2,048 KB'},
-  ];
-
-  function addOutput(text, className){
-    const out = document.createElement('div');
-    out.className = 'output' + (className? ' ' + className: '');
-    out.textContent = text;
-    term.appendChild(out);
-    scrollToBottom();
-  }
-
-  function newPrompt(prefill=''){
-    // wrapper line
-    const line = document.createElement('div');
-    line.className = 'line';
-
-    const pr = document.createElement('span');
-    pr.className = 'prompt';
-    pr.textContent = `${promptTextBase}`;
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'cmd';
-    input.autocomplete = 'off';
-    input.spellcheck = false;
-    input.value = prefill;
-
-    // focus handling
-    input.addEventListener('keydown', function(e){
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const cmd = input.value;
-        processCommand(cmd);
-        // disable this input and create a new prompt
-        input.disabled = true;
-        input.style.opacity = 0.85;
-        newPrompt('');
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (history.length === 0) return;
-        historyIndex = Math.max(0, (historyIndex === -1 ? history.length-1 : historyIndex-1));
-        input.value = history[historyIndex] || '';
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (history.length === 0) return;
-        if (historyIndex === -1) return;
-        historyIndex = Math.min(history.length-1, historyIndex+1);
-        if (historyIndex === history.length-1) { input.value = ''; historyIndex = -1; }
-        else input.value = history[historyIndex] || '';
-      }
-    });
-
-    line.appendChild(pr);
-    line.appendChild(input);
-    term.appendChild(line);
-
-    // focus last created input
-    setTimeout(() => { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }, 30);
-    scrollToBottom();
-  }
-
-  function scrollToBottom(){
-    term.scrollTop = term.scrollHeight;
-  }
-
-  function processCommand(raw){
-    const cmdline = (raw||'').trim();
-    if (cmdline.length === 0) return;
-    history.push(cmdline);
-    historyIndex = -1;
-
-    addOutput(`${promptTextBase}${cmdline}`, 'muted'); // echo the executed line like real cmd
-
-    const parts = cmdline.split(' ').filter(Boolean);
-    const cmd = parts[0].toLowerCase();
-    const args = parts.slice(1);
-
-    switch(cmd) {
-      case 'help':
-        addOutput('利用可能なコマンド: dir, cls, echo, help, time, date, history, exit');
-        break;
-      case 'dir':
-        addOutput(' カーネル: FakeFS Listing');
-        addOutput('');
-        fakeFS.forEach(item => {
-          const t = item.type === 'dir' ? '<DIR>' : item.size;
-          addOutput(`${item.name.padEnd(24,' ')} ${t}`);
-        });
-        addOutput('');
-        addOutput('       ' + fakeFS.length + ' 個のファイルまたはディレクトリ');
-        break;
-      case 'cls':
-        clearTerminal();
-        break;
-      case 'echo':
-        addOutput(args.join(' '));
-        break;
-      case 'time':
-        addOutput(new Date().toLocaleTimeString());
-        break;
-      case 'date':
-        addOutput(new Date().toLocaleDateString());
-        break;
-      case 'history':
-        if (history.length === 0) addOutput('履歴なし。');
-        else history.forEach((h,i)=> addOutput((i+1).toString().padStart(3,' ') + '  ' + h));
-        break;
-      case 'exit':
-        addOutput('セッションを終了します。 (このページを閉じてください)');
-        break;
-      default:
-        addOutput(`'${cmd}' は、内部コマンドまたは外部コマンド、操作可能なプログラムまたはバッチ ファイルとして認識されません。`);
-        break;
+        // 入力をリセット
+        document.getElementById("inputCode").value = "";
     }
-  }
-
-  function clearTerminal(){
-    // remove everything except title lines (first two outputs) and then create a fresh prompt
-    // We'll remove all children then re-add initial lines
-    while (term.firstChild) term.removeChild(term.firstChild);
-    addOutput('Microsoft Windows [Version 10.0.19045.XXX]', 'muted');
-    addOutput('(c) Microsoft Corporation. All rights reserved.', 'muted');
-  }
-
-  // initial prompt
-  newPrompt('');
-
-  // focus when clicking anywhere on term
-  term.addEventListener('click', () => {
-    // find the last input and focus it
-    const inputs = term.querySelectorAll('input.cmd');
-    const last = inputs[inputs.length-1];
-    if (last) last.focus();
-  });
-
-  // keyboard focus: if user presses any key while term focused, focus input
-  document.addEventListener('keydown', (e) => {
-    const active = document.activeElement;
-    if (active && (active.tagName === 'INPUT' || active.isContentEditable)) return;
-    // focus last input
-    const inputs = term.querySelectorAll('input.cmd');
-    const last = inputs[inputs.length-1];
-    if (last) last.focus();
-  });
-
-  // small accessibility: ensure at least one prompt exists even after clearing
-  // (cls will call clearTerminal, then user gets a new prompt because newPrompt was chained when pressing Enter)
-})();
 </script>
+
 </body>
 </html>
