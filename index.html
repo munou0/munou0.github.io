@@ -1,215 +1,284 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <meta name="google-site-verification" content="4U4miU3Gsc0UAXRYGq5Y5ezYuwDvyN93D19iR8COO4E" />
-  <meta name="robots" content="index,fllow">
-<meta name="description" content="NeonCity Hub: Dive into the neon-lit cybersprawl, hack autonomous AI systems, and explore futuristic urban networks in real-time. Code is your only currency in the digital night.">
-
-<title>サイバーパンク風 Chatbot - フルスクリーン対応</title>
-
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Windows CMD - Fake</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-
-  /* 全画面対応のためbodyとhtmlを高さ100%に */
-  html, body {
-    height: 100%;
-    margin: 0;
-    background: #0f0f16;
-    color: #00ffea;
-    font-family: 'Orbitron', monospace, monospace;
-    display: flex;
-    flex-direction: column;
+  html,body { height:100%; margin:0; background:#111; font-family: "Consolas", "Lucida Console", Monaco, monospace; }
+  .window {
+    box-sizing:border-box;
+    width:100%;
+    max-width:980px;
+    height:640px;
+    margin:40px auto;
+    background:linear-gradient(#0b0b0b,#050505);
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
   }
 
-  h1 {
-    text-align: center;
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-    font-weight: 900;
-    letter-spacing: 0.15em;
-    margin: 20px 0 0 0;
-    user-select: none;
+  /* Title bar */
+  .titlebar {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 12px;
+    background:linear-gradient(#1f1f1f,#141414);
+    color:#ddd;
+    font-size:13px;
+    user-select:none;
+  }
+  .titlebar .dots { display:flex; gap:6px; }
+  .dot { width:12px; height:12px; border-radius:50%; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.5); }
+  .dot.r { background:#ff5f57; }
+  .dot.y { background:#febc2e; }
+  .dot.g { background:#28c840; }
+
+  /* Terminal body */
+  .term {
+    padding:12px 14px;
+    color:#dcdcdc; /* default text color */
+    background:transparent;
+    font-size:15px;
+    line-height:1.45;
+    flex:1;
+    overflow:auto;
+    white-space:pre-wrap;
   }
 
-  #subtitle {
-    text-align: center;
-    color: #00ffea;
-    text-shadow: 0 0 8px #00ffea;
-    margin: -8px 0 15px 0;
-    font-size: 1.1em;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    user-select: none;
+  /* Prompt line */
+  .line { display:flex; align-items:center; gap:8px; }
+  .prompt {
+    color:#9bdcff;
+    margin-right:6px;
+    user-select:text;
+    flex:0 0 auto;
   }
 
-  #chatbox {
-    background: #12121f;
-    border: 2px solid #00ffea;
-    border-radius: 10px;
-    padding: 15px;
-    flex-grow: 1;
-    margin: 0 20px;
-    overflow-y: auto;
-    box-shadow: 0 0 15px #00ffea;
-    user-select: text;
+  input.cmd {
+    flex:1;
+    background:transparent;
+    color:inherit;
+    border:0;
+    outline:0;
+    caret-color:#dcdcdc;
+    font:inherit;
+    padding:0;
+    margin:0;
+    min-width:6ch;
   }
+  /* Remove default input chrome on iOS */
+  input.cmd::-ms-clear, input.cmd::-ms-reveal { display:none; width:0; height:0; }
+  ::selection { background:rgba(255,255,255,0.12); }
 
-  .user-msg {
-    color: #ff00ff;
-    margin: 8px 0;
-    text-align: right;
-    text-shadow: 0 0 6px #ff00ff;
-    font-weight: 700;
-  }
+  .output { color:#dcdcdc; margin:4px 0 8px 0; white-space:pre-wrap; }
 
-  .bot-msg {
-    color: #00ffea;
-    margin: 8px 0;
-    text-align: left;
-    text-shadow: 0 0 6px #00ffea;
-    font-weight: 700;
-  }
+  .muted { color:#9a9a9a; }
 
-  #input-area {
-    margin: 15px 20px 20px 20px;
-    display: flex;
-    justify-content: center;
+  /* Faux blinking cursor for non-input output (if needed) */
+  .cursor {
+    display:inline-block;
+    width:.6ch;
+    height:1.1em;
+    background:#dcdcdc;
+    animation:blink 1s steps(1) infinite;
+    vertical-align:bottom;
+    margin-left:2px;
   }
+  @keyframes blink { 50% { opacity:0; } }
 
-  #input-text {
-    flex-grow: 1;
-    background: #12121f;
-    border: 2px solid #ff00ff;
-    border-radius: 5px 0 0 5px;
-    color: #00ffea;
-    padding: 12px;
-    font-size: 1.1em;
-    outline: none;
-    box-shadow: 0 0 10px #ff00ff inset;
-  }
-
-  #input-text::placeholder {
-    color: #555;
-    letter-spacing: 0.1em;
-  }
-
-  #send-btn {
-    background: #ff00ff;
-    border: none;
-    border-radius: 0 5px 5px 0;
-    color: #0f0f16;
-    padding: 12px 25px;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 0 15px #ff00ff;
-    transition: background 0.3s ease;
-    letter-spacing: 0.12em;
-  }
-
-  #send-btn:hover {
-    background: #e600e6;
-  }
-
-  #error {
-    color: #ff0044;
-    margin: 0 20px 15px 20px;
-    text-align: center;
-    text-shadow: 0 0 10px #ff0044;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    min-height: 24px;
-    user-select: none;
-  }
-
-  /* スクロールバーをネオン風にカスタマイズ(Webkit系) */
-  #chatbox::-webkit-scrollbar {
-    width: 8px;
-  }
-  #chatbox::-webkit-scrollbar-track {
-    background: #12121f;
-  }
-  #chatbox::-webkit-scrollbar-thumb {
-    background: #ff00ff;
-    border-radius: 4px;
-    box-shadow: 0 0 8px #ff00ff;
-  }
+  /* small help hint */
+  .hint { position: absolute; right:18px; bottom:12px; color:#7b7b7b; font-size:12px; }
 </style>
 </head>
 <body>
+  <div class="window" role="application" aria-label="Fake Windows Command Prompt">
+    <div class="titlebar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div style="font-weight:600">C:\Windows\system32\cmd.exe</div>
+      <div style="margin-left:auto;font-size:12px;color:#a8a8a8">Windows Command Prompt — 再現</div>
+    </div>
 
-<h1>NEON NODE GPT-4o-mini</h1>
-<div id="subtitle"># Engage the digital frontier. Speak your code.</div>
+    <div class="term" id="term" tabindex="0" aria-live="polite">
+      <!-- initial text lines -->
+      <div class="output muted">Microsoft Windows [Version 10.0.19045.XXX]</div>
+      <div class="output muted">(c) Microsoft Corporation. All rights reserved.</div>
 
-<div id="chatbox"></div>
+      <!-- prompt area where new lines will be appended -->
+    </div>
 
-<div id="input-area">
-  <input type="text" id="input-text" placeholder="> INPUT YOUR COMMAND..." autocomplete="off" />
-  <button id="send-btn">TRANSMIT</button>
-</div>
-
-<div id="error"></div>
+    <div class="hint muted">サポート: dir, cls, echo, help, time, date, history, exit</div>
+  </div>
 
 <script>
-  const chatbox = document.getElementById('chatbox');
-  const inputText = document.getElementById('input-text');
-  const sendBtn = document.getElementById('send-btn');
-  const errorDiv = document.getElementById('error');
+(function(){
+  const term = document.getElementById('term');
+  const username = 'パソコンマニア'; // ここを好きな名前に変えて
+  const drive = 'C:';
+  const initialPath = `\\Users\\${username}`;
+  const promptTextBase = `${drive}${initialPath}>`;
 
-  const API_KEY = prompt('APIキーを入れなさい');
-  const ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+  let history = [];
+  let historyIndex = -1;
 
-  sendBtn.addEventListener('click', () => {
-    const message = inputText.value.trim();
-    if (!message) return;
-    appendMessage('user', message);
-    inputText.value = '';
-    errorDiv.textContent = '';
-    callOpenAI(message);
-  });
+  const fakeFS = [
+    {name:'Documents', type:'dir'},
+    {name:'Desktop', type:'dir'},
+    {name:'picture.jpg', type:'file', size:'124 KB'},
+    {name:'notes.txt', type:'file', size:'1 KB'},
+    {name:'program.exe', type:'file', size:'2,048 KB'},
+  ];
 
-  inputText.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendBtn.click();
-  });
-
-  function appendMessage(role, text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    div.className = role === 'user' ? 'user-msg' : 'bot-msg';
-    chatbox.appendChild(div);
-    chatbox.scrollTop = chatbox.scrollHeight;
+  function addOutput(text, className){
+    const out = document.createElement('div');
+    out.className = 'output' + (className? ' ' + className: '');
+    out.textContent = text;
+    term.appendChild(out);
+    scrollToBottom();
   }
 
-  async function callOpenAI(message) {
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: message }]
-        })
-      });
+  function newPrompt(prefill=''){
+    // wrapper line
+    const line = document.createElement('div');
+    line.className = 'line';
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error.message || 'APIエラーが発生しました');
+    const pr = document.createElement('span');
+    pr.className = 'prompt';
+    pr.textContent = `${promptTextBase}`;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'cmd';
+    input.autocomplete = 'off';
+    input.spellcheck = false;
+    input.value = prefill;
+
+    // focus handling
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const cmd = input.value;
+        processCommand(cmd);
+        // disable this input and create a new prompt
+        input.disabled = true;
+        input.style.opacity = 0.85;
+        newPrompt('');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (history.length === 0) return;
+        historyIndex = Math.max(0, (historyIndex === -1 ? history.length-1 : historyIndex-1));
+        input.value = history[historyIndex] || '';
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (history.length === 0) return;
+        if (historyIndex === -1) return;
+        historyIndex = Math.min(history.length-1, historyIndex+1);
+        if (historyIndex === history.length-1) { input.value = ''; historyIndex = -1; }
+        else input.value = history[historyIndex] || '';
       }
+    });
 
-      const data = await res.json();
-      const reply = data.choices[0].message.content;
-      appendMessage('bot', reply);
-    } catch (err) {
-      errorDiv.textContent = 'ERROR: ' + err.message.toUpperCase();
+    line.appendChild(pr);
+    line.appendChild(input);
+    term.appendChild(line);
+
+    // focus last created input
+    setTimeout(() => { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }, 30);
+    scrollToBottom();
+  }
+
+  function scrollToBottom(){
+    term.scrollTop = term.scrollHeight;
+  }
+
+  function processCommand(raw){
+    const cmdline = (raw||'').trim();
+    if (cmdline.length === 0) return;
+    history.push(cmdline);
+    historyIndex = -1;
+
+    addOutput(`${promptTextBase}${cmdline}`, 'muted'); // echo the executed line like real cmd
+
+    const parts = cmdline.split(' ').filter(Boolean);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    switch(cmd) {
+      case 'help':
+        addOutput('利用可能なコマンド: dir, cls, echo, help, time, date, history, exit');
+        break;
+      case 'dir':
+        addOutput(' カーネル: FakeFS Listing');
+        addOutput('');
+        fakeFS.forEach(item => {
+          const t = item.type === 'dir' ? '<DIR>' : item.size;
+          addOutput(`${item.name.padEnd(24,' ')} ${t}`);
+        });
+        addOutput('');
+        addOutput('       ' + fakeFS.length + ' 個のファイルまたはディレクトリ');
+        break;
+      case 'cls':
+        clearTerminal();
+        break;
+      case 'echo':
+        addOutput(args.join(' '));
+        break;
+      case 'time':
+        addOutput(new Date().toLocaleTimeString());
+        break;
+      case 'date':
+        addOutput(new Date().toLocaleDateString());
+        break;
+      case 'history':
+        if (history.length === 0) addOutput('履歴なし。');
+        else history.forEach((h,i)=> addOutput((i+1).toString().padStart(3,' ') + '  ' + h));
+        break;
+      case 'exit':
+        addOutput('セッションを終了します。 (このページを閉じてください)');
+        break;
+      default:
+        addOutput(`'${cmd}' は、内部コマンドまたは外部コマンド、操作可能なプログラムまたはバッチ ファイルとして認識されません。`);
+        break;
     }
   }
-</script>
 
+  function clearTerminal(){
+    // remove everything except title lines (first two outputs) and then create a fresh prompt
+    // We'll remove all children then re-add initial lines
+    while (term.firstChild) term.removeChild(term.firstChild);
+    addOutput('Microsoft Windows [Version 10.0.19045.XXX]', 'muted');
+    addOutput('(c) Microsoft Corporation. All rights reserved.', 'muted');
+  }
+
+  // initial prompt
+  newPrompt('');
+
+  // focus when clicking anywhere on term
+  term.addEventListener('click', () => {
+    // find the last input and focus it
+    const inputs = term.querySelectorAll('input.cmd');
+    const last = inputs[inputs.length-1];
+    if (last) last.focus();
+  });
+
+  // keyboard focus: if user presses any key while term focused, focus input
+  document.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.isContentEditable)) return;
+    // focus last input
+    const inputs = term.querySelectorAll('input.cmd');
+    const last = inputs[inputs.length-1];
+    if (last) last.focus();
+  });
+
+  // small accessibility: ensure at least one prompt exists even after clearing
+  // (cls will call clearTerminal, then user gets a new prompt because newPrompt was chained when pressing Enter)
+})();
+</script>
 </body>
 </html>
-
