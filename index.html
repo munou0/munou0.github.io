@@ -1,6 +1,70 @@
-<div id="r"></div>
-<script>
-  fetch("https://example.com")
-.then(r=>r.json())
-.then(d=>document.getElementById("r").textContent=d);
-</script>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>無能のホームページ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+      text-align: center;
+      padding: 50px;
+    }
+    header {
+      background-color: #444;
+      color: #fff;
+      padding: 20px;
+    }
+    section {
+      margin-top: 30px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>無能のホームページ</h1>
+    <p>特に意味はないが存在はしている</p>
+  </header>
+
+  <section>
+    <h2>このサイトについて</h2>
+    <p>
+      このサイトは、何も成し遂げていない人間が<br>
+      「何かやってる気」になるためだけに作られました。
+    </p>
+  </section>
+
+  <section>
+    <h2>管理人プロフィール</h2>
+    <ul style="list-style: none; padding: 0;">
+      <li>名前：無能</li>
+      <li>特技：先延ばし</li>
+      <li>趣味：自分探し（未発見）</li>
+      <li>実績：特になし</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>メッセージ</h2>
+    <p>
+      「いつか本気出す」<br>
+      ──その“いつか”は一生来ない。
+    </p>
+  </section>
+
+  <footer>
+    <p>© 無能のホームページ / 見る価値なし</p>
+  </footer>
+
+</body>
+</html>
