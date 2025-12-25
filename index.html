@@ -1,86 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-<meta name="google-site-verification" content="4U4miU3Gsc0UAXRYGq5Y5ezYuwDvyN93D19iR8COO4E" />
-  <!-- 基本SEO -->
-  <title>無能のホームページ｜何も成し遂げていない人の記録</title>
-  <meta name="description" content="何も成し遂げていない無能による無意味なホームページ。特技は先延ばし、実績は特になし。">
-  <meta name="keywords" content="無能, ホームページ, 何もしない, 自己紹介, ダメ人間">
-  <meta name="robots" content="index, follow">
-
-  <!-- モバイル対応 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SNS表示（OGP） -->
-  <meta property="og:title" content="無能のホームページ">
-  <meta property="og:description" content="存在しているだけの無意味なサイト。見る価値はない。">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="ja_JP">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="目が痛くなるほど派手で汚いデザインのウェブページ。色と余白の洪水、無意味なアニメーション、古き悪きタグを駆使して作られた混沌のページです。" />
+  <meta name="keywords" content="汚い,カオス,派手,余白,マルキー,Blink,アニメーション,無駄,ウェブデザイン" />
+  <meta name="robots" content="index,follow" />
+  <meta name="author" content="あなた（勇気のある者）" />
+  <title>見てて汚いページ</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      color: #333;
-      text-align: center;
-      padding: 50px;
+    /* フォントはあえてComic系でダサく */
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+    /* ページ全体 */
+    html,body{height:100%;margin:0;padding:0;background:
+      repeating-linear-gradient(45deg,
+        rgba(255,0,170,0.15) 0 15px,
+        rgba(0,255,85,0.15) 15px 30px),
+      linear-gradient(180deg,#ffff66,#66ffff);
+      font-family:"Comic Neue","Comic Sans MS",cursive;
+      color:#1b1b1b;
+      overflow-x:hidden;
     }
-    header {
-      background-color: #444;
-      color: #fff;
-      padding: 20px;
+
+    /* ギャンギャンするコンテナ */
+    .box{
+      max-width:1100px;margin:20px auto;padding:18px;border:12px double #ff00aa;
+      background:linear-gradient(90deg, rgba(255,255,255,0.85), rgba(0,0,0,0.05));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      position:relative;
+      transform-origin:center;
+      animation: sway 6s ease-in-out infinite;
     }
-    section {
-      margin-top: 30px;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
+    @keyframes sway{
+      0%{transform:rotate(-1deg)}
+      50%{transform:rotate(1deg) scale(1.01)}
+      100%{transform:rotate(-1deg)}
     }
-    footer {
-      margin-top: 40px;
-      font-size: 0.8em;
-      color: #777;
+
+    /* でかい見出し（目につく色をてんこ盛り） */
+    h1{
+      font-size:64px;margin:0 0 10px 0;padding:10px;
+      text-align:center;
+      background: linear-gradient(90deg,#ff0066,#ffcc00,#00ff99,#00ccff);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      letter-spacing:6px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    /* サブ見出しがうるさい */
+    h2{font-size:28px;margin:12px 0;padding:6px;background:#000;color:#fff;border-radius:6px;display:inline-block;}
+
+    /* ガチャガチャなボタン */
+    .btn{
+      display:inline-block;padding:12px 22px;margin:8px;border:4px groove #00ff66;
+      background: linear-gradient(180deg,#fff,#ffd700);
+      cursor:pointer;font-weight:700;
+      transform:translateZ(0);box-shadow: 0 8px 0 rgba(0,0,0,0.3);
+    }
+    .btn:active{transform: translateY(6px);box-shadow:none;}
+
+    /* blinking テキスト */
+    .blink{animation: blink 1s steps(2,end) infinite;font-weight:900;}
+    @keyframes blink{50%{opacity:0}}
+
+    /* 回転するピル（邪魔） */
+    .orb{position:absolute;right:-80px;top:-80px;width:220px;height:220px;border-radius:50%;
+      background:conic-gradient(#ff0066,#ffcc00,#00ff99,#00ccff);
+      filter:blur(6px);opacity:0.85;mix-blend-mode:overlay;animation: spin 8s linear infinite;
+      border:6px solid rgba(255,255,255,0.25);
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* カラムを被せて視覚的に混乱させる */
+    .columns{display:flex;gap:18px;margin-top:18px}
+    .col{flex:1;padding:12px;border:6px dashed rgba(0,0,0,0.1);background:rgba(255,255,255,0.6)}
+    .col .card{padding:10px;margin:8px 0;border-radius:6px;border:3px solid #000; background: linear-gradient(45deg,#fff6,#0002);}
+
+    /* 無駄な画像風フレーム */
+    .frame{height:150px;background-image: linear-gradient(135deg,#ffeeaa,#aaffff);border:8px inset #ff88ff;margin-bottom:12px;
+      display:flex;align-items:center;justify-content:center;font-size:24px;color:#333;letter-spacing:2px;
+    }
+
+    /* ページの下にしつこいフッター */
+    footer{margin-top:20px;padding:16px;text-align:center;border-top:6px solid #ff00aa;background:linear-gradient(90deg,#2222,#ffffff22);}
+
+    /* マウスオーバーでページ全体を更に派手にする */
+    body:hover{filter:hue-rotate(30deg) saturate(1.2)}
+    .shake{display:inline-block;animation: shake 0.6s infinite;}
+    @keyframes shake{10%{transform:translateX(-4px)}30%{transform:translateX(4px)}50%{transform:translateX(-3px)}70%{transform:translateX(3px)}100%{transform:translateX(0)}}
+
+    /* レスポンシブでさらに混乱 */
+    @media (max-width:700px){
+      h1{font-size:36px}
+      .columns{flex-direction:column}
+      .orb{display:none}
     }
   </style>
 </head>
-
 <body>
+  <div class="orb" aria-hidden="true"></div>
 
-  <header>
-    <h1>無能のホームページ</h1>
-    <p>特に意味はないが存在はしている</p>
-  </header>
-
-  <section>
-    <h2>このサイトについて</h2>
-    <p>
-      このサイトは、何も成し遂げていない人間が<br>
-      「何かやってる気」になるためだけに作られました。
+  <div class="box">
+    <h1 class="blink">見てて汚いページ</h1>
+    <p style="text-align:center;margin:8px 0 18px 0;">
+      <span class="shake">色</span>と<span class="shake">余白</span>が暴れている。<strong>目に優しくない</strong>デザインを目指しました。
     </p>
-  </section>
 
-  <section>
-    <h2>管理人プロフィール</h2>
-    <ul style="list-style: none; padding: 0;">
-      <li>名前：無能</li>
-      <li>特技：先延ばし</li>
-      <li>趣味：自分探し（未発見）</li>
-      <li>実績：特になし</li>
-    </ul>
-  </section>
+    <!-- 退屈な往年のタグを投入 -->
+    <marquee behavior="alternate" scrollamount="15" style="background:#000;color:#fff;padding:6px;border-radius:4px;">
+      ここはマルキー。古き良き（悪き）時代の遺産。
+    </marquee>
 
-  <section>
-    <h2>メッセージ</h2>
-    <p>
-      「いつか本気出す」<br>
-      ──その“いつか”は一生来ない。
+    <div class="columns" role="region" aria-label="カラム群">
+      <div class="col">
+        <div class="frame">意味のないフレーム</div>
+        <div class="card">・色の洪水</div>
+        <div class="card">・フォントはうるさい</div>
+        <div class="card">・コントラスト無視</div>
+        <button class="btn" onclick="document.body.style.background = randomBg()">背景チェンジ</button>
+      </div>
+
+      <div class="col" style="background:linear-gradient(180deg,#ffeeaa,#aaffff);">
+        <h2 class="blink">注意</h2>
+        <p>ここに説明があるようでない説明。情報の密度は低く、主張の強さは高い。</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="btn" onclick="alert('刺激が強すぎます')">押すな</span>
+          <span class="btn" onclick="document.querySelector('h1').textContent='さらに汚く！'">もっと汚す</span>
+        </div>
+      </div>
+
+      <div class="col" style="background:linear-gradient(90deg,#ffddff,#ddffcc);">
+        <h2>ライブテキスト</h2>
+        <p style="font-size:20px">カウントダウン: <span id="counter">10</span></p>
+        <div class="card">— 無意味なカード</div>
+        <div class="card">— 目に優しくない配色</div>
+      </div>
+    </div>
+
+    <hr style="border:6px dashed #00ff88;margin:20px 0;">
+
+    <p style="font-size:18px;">
+      最後に一言：デザインの良心は捨て去った。<span style="background:#000;color:#fff;padding:2px 6px;border-radius:3px">成功</span>
     </p>
-  </section>
 
-  <footer>
-    <p>© 無能のホームページ / 見る価値なし</p>
-  </footer>
+    <footer>
+      <small>作成者: あなた（勇気のある者） | ここで一旦終了</small>
+    </footer>
+  </div>
 
+  <script>
+    // カウントダウン（無駄）
+    let c = 10;
+    const el = document.getElementById('counter');
+    setInterval(()=>{ c = (c-1+11)%11; el.textContent = c; }, 900);
+
+    // 背景をランダムに変更する無駄な関数
+    function randomBg(){
+      const list = [
+        'repeating-linear-gradient(45deg, #ff00aa 0 6px, #00ff44 6px 12px), linear-gradient(180deg,#ffff99,#99ffff)',
+        'linear-gradient(135deg,#ffe6e6,#e6ffe6)',
+        'radial-gradient(circle at 20% 20%, #ff0,#f0f)',
+        'repeating-linear-gradient(90deg,#ffcccc 0 10px,#ccffcc 10px 20px), linear-gradient(180deg,#fff,#ddd)'
+      ];
+      const pick = list[Math.floor(Math.random()*list.length)];
+      document.body.style.background = pick;
+      return pick;
+    }
+
+    // キーボードのいたずら（押すと文字が踊る）
+    document.addEventListener('keydown', e=>{
+      const t = document.createElement('div');
+      t.textContent = e.key;
+      t.style.position='fixed';
+      t.style.left = (Math.random()*80 + 10) + '%';
+      t.style.top = (Math.random()*80 + 10) + '%';
+      t.style.fontSize = (20 + Math.random()*60) + 'px';
+      t.style.pointerEvents = 'none';
+      t.style.opacity = 0.9;
+      t.style.transform = 'rotate(' + (Math.random()*60-30) + 'deg)';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 1500);
+    });
+  </script>
 </body>
 </html>
